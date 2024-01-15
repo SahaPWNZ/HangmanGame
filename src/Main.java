@@ -4,8 +4,9 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main {
+    static Scanner scan1 = new Scanner(System.in);
     public static void main(String[] args) throws FileNotFoundException {
-        List<String> listWithWords = loadingWordsFromFile("C:\\Users\\User\\IdeaProjects\\HadgmanJDK17\\src\\russian_nouns.txt");
+        List<String> listWithWords = loadingWordsFromFile(Hangman.PATH);
         while (true) {
             startGame(listWithWords);
             exitFromMainLoop();
@@ -23,14 +24,10 @@ public class Main {
 
     public static void gameLoop(int countMistakes, StringBuffer randomWord, StringBuffer maskWord) {
         String constWord = randomWord.toString();
-        while (true) {
-            if (isVictory(maskWord, constWord)) {
-                System.out.println("Victory!!!");
-                break;
-            }
+        while (!isVictory(maskWord, constWord)) {
             System.out.println(Hangman.ARRAY_ALL_STATES[countMistakes]);
             System.out.println(Arrays.toString(maskWord.toString().toCharArray()));
-            String input = ValidateIncomingSymbol();
+            String input = validateIncomingSymbol();
 
             if (randomWord.indexOf(input) != -1) {
                 while (randomWord.indexOf(input) != -1) {
@@ -48,12 +45,14 @@ public class Main {
                 }
             }
         }
+
+
     }
 
-    public static String ValidateIncomingSymbol() {
+    public static String validateIncomingSymbol() {
         while (true) {
             System.out.println("Введите букву русского алфавита");
-            Scanner scan = new Scanner(System.in);
+            Scanner scan = scan1;
             char input = scan.nextLine().charAt(0);
             if (input >= 'А' && input <= 'я') {
                 return Character.toString(Character.toLowerCase(input));
@@ -64,14 +63,19 @@ public class Main {
     }
 
     public static boolean isVictory(StringBuffer maskWord, String constWord) {
-        return maskWord.toString().equals(constWord);
+        if (maskWord.toString().equals(constWord)){
+            System.out.println("Victory!!!!!");
+            return maskWord.toString().equals(constWord);
+        }
+        return false;
     }
 
     public static void exitFromMainLoop() {
         System.out.println("Введите 0 чтобы выйти с игры, или любую другую клавищу чтобы продолжить");
-        Scanner scan = new Scanner(System.in);
+        Scanner scan = scan1;
         String input = scan.nextLine();
         if (input.equals("0")) {
+
             System.exit(0);
         }
     }
@@ -91,12 +95,12 @@ public class Main {
     }
 
     public static List<String> loadingWordsFromFile(String path) throws FileNotFoundException {
-        List<String> listWithWords = new ArrayList<>(46000);
+        List<String> listWithWords = new ArrayList<>();
         File file = new File(path);
         Scanner scan = new Scanner(file);
         while (scan.hasNextLine()) {
             String word = scan.nextLine();
-            if (word.length() <6) {
+            if (word.length() < 6) {
                 listWithWords.add(word);
             }
         }
